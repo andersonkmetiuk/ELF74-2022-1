@@ -5,6 +5,6 @@
 - Professor: Prof. Paulo Denis Garcez da Luz
 - Email: garcez@professores.utfpr.edu.br
 
-- Código: ELF74 - Sistemas Embarcados
+- Disciplina: ELF74 - Sistemas Embarcados
 - Ano: 2022
 - Semestre: 1
