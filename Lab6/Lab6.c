@@ -18,11 +18,24 @@ Lab6 - RTOS ThreadX - Escalonamento
 #define DEMO_BLOCK_POOL_SIZE    100
 #define DEMO_QUEUE_SIZE         100
 
+/*
+Programas 
+  N=0 -> a) Escalonamento por time-slice de 50 ms. Todas as tarefas com mesma prioridade.
+  N=1 -> b) Escalonamento sem time-slice e sem preempção. Prioridades estabelecidas no passo 3. A preempção pode ser evitada com o “ 
+  preemption threshold” do ThreadX.
+  N=2 -> c) Escalonamento preemptivo por prioridade.
+  N=3 -> d) Implemente um Mutex compartilhado entre T1 e T3. No início de cada job estas tarefas devem solicitar este mutex e liberá-lo no 
+  final. Use mutex sem herança de prioridade. Observe o efeito na temporização das tarefas.
+  N=4 -> e) Idem acima, mas com herança de prioridade.
+*/
+#define N_Programa 0 //selecionar o número do programa para as letras "a)" até "e)"
+
 /* Define as Threads utilizadas e as estruturas de dados do S.O. ... */
 TX_THREAD thread_1;
 TX_THREAD thread_2;
 TX_THREAD thread_3;
 TX_BYTE_POOL byte_pool_0;
+TX_MUTEX mutex_0;
 
 /* Define o byte pool memory. */
 UCHAR byte_pool_memory[DEMO_BYTE_POOL_SIZE];
@@ -32,7 +45,7 @@ void thread_1_entry(ULONG thread_input);
 void thread_2_entry(ULONG thread_input);
 void thread_3_entry(ULONG thread_input);
 
-void Setup_Inicial()
+void Setup_Leds()
 {
   /*
   --- PORTS ---
@@ -40,8 +53,7 @@ void Setup_Inicial()
     Led1=PN1,Led2=PN0,Led3=PF4,Led4=PF0
   -------------
   */
-  
-  
+    
   //Habilita os Ports
   //GPIO port N
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
@@ -61,7 +73,7 @@ void Setup_Inicial()
 /* função main. */
 int main()
 {
-  Setup_Inicial();
+  Setup_Leds();
   /* Executar o ThreadX kernel.  */
   tx_kernel_enter();
 }
@@ -73,21 +85,80 @@ void tx_application_define(void *first_unused_memory)
   #ifdef TX_ENABLE_EVENT_TRACE
     tx_trace_enable(trace_buffer, sizeof(trace_buffer), 32);
   #endif
+    
+  //Variáveis
+  UINT Time_Slice[3];
+  UINT Prioridade_Thread[3];
+  UINT Preempcao_Thread[3];
+  int i;
+    
+    for(i=0;i<3;i++) //preenche os vetores com as configs das threads
+    { 
+      if(N_Programa==0)//letra a
+      {
+        Time_Slice[i]=50;
+        Prioridade_Thread[i]=0;
+        Preempcao_Thread[i]=0;
+      }
+      else if (N_Programa==1)//letra b
+      {
+        Time_Slice[i]= TX_NO_TIME_SLICE; 
+        Prioridade_Thread[i]=i;
+        Preempcao_Thread[i]=0;
+      }  
+      else //letra c,d,e
+      {
+        Time_Slice[i]= TX_NO_TIME_SLICE; 
+        Prioridade_Thread[i]=i;
+        Preempcao_Thread[i]=i;
+      }
+    }   
+    
+
   /* Cria o bloco de memoria para alocação das tarefas */
   tx_byte_pool_create(&byte_pool_0, "byte pool 0", byte_pool_memory, DEMO_BYTE_POOL_SIZE);
+  
+  
+/* 
+*****  CRIAÇÃO DE THREADS******
+UINT tx_thread_create(
+    TX_THREAD *thread_ptr,
+    CHAR *name_ptr, 
+    VOID (*entry_function)(ULONG),
+    ULONG entry_input, 
+    VOID *stack_start,
+    ULONG stack_size, 
+    UINT priority, <--- prioridade
+    UINT preempt_threshold,  <---- preempção
+    ULONG time_slice, <--- time slice
+    UINT auto_start);  
+*/
+  
   /* Aloca a pilha para a tarefa1 */
   tx_byte_allocate(&byte_pool_0, (VOID **) &pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
   /* Cria a tarefa1 com time slice. */
-  tx_thread_create(&thread_1, "thread 1", thread_1_entry, 1, pointer, DEMO_STACK_SIZE, 16, 16, 4, TX_AUTO_START);
+  tx_thread_create(&thread_1, "thread 1", thread_1_entry, 1, pointer, DEMO_STACK_SIZE, Prioridade_Thread[0], Preempcao_Thread[0], Time_Slice[0], TX_AUTO_START);
+
   /* Aloca a pilha para a tarefa2. */
   tx_byte_allocate(&byte_pool_0, (VOID **) &pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
   /* Cria a tarefa2 com time slice. */
-  tx_thread_create(&thread_2, "thread 2", thread_2_entry, 2, pointer, DEMO_STACK_SIZE, 16, 16, 4, TX_AUTO_START);
+  tx_thread_create(&thread_2, "thread 2", thread_2_entry, 2, pointer, DEMO_STACK_SIZE, Prioridade_Thread[1], Preempcao_Thread[1], Time_Slice[1], TX_AUTO_START);
+
   /* Aloca a pilha para a tarefa3. */
   tx_byte_allocate(&byte_pool_0, (VOID **) &pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
   /* Cria a tarefa3 com time slice. */
-  tx_thread_create(&thread_3, "thread 3", thread_3_entry, 2, pointer, DEMO_STACK_SIZE, 16, 16, 4, TX_AUTO_START);
+  tx_thread_create(&thread_3, "thread 3", thread_3_entry, 2, pointer, DEMO_STACK_SIZE, Prioridade_Thread[2], Preempcao_Thread[2], Time_Slice[2], TX_AUTO_START);
   
+  //****MUTEX****
+  if(N_Programa==3)//letra d
+  {
+    tx_mutex_create(&mutex_0, "mutex 0", TX_NO_INHERIT); //sem herança
+  }
+  if(N_Programa==4)//letra e
+  { 
+    tx_mutex_create(&mutex_0, "mutex 0", TX_INHERIT); //herança
+  }  
+
   /* devolve o bloco para o pool */
   tx_block_release(pointer);
 }
