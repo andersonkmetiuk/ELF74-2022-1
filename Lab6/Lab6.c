@@ -29,6 +29,8 @@ Programas
   N=4 -> e) Idem acima, mas com herança de prioridade.
 */
 #define N_Programa 0 //selecionar o número do programa para as letras "a)" até "e)"
+#define Thread_Loop 10
+#define Thread_Sleep 100 //1 tick SO = 10ms
 
 /* Define as Threads utilizadas e as estruturas de dados do S.O. ... */
 TX_THREAD thread_1;
@@ -71,7 +73,7 @@ void Setup_Leds()
 }
 
 /* função main. */
-int main()
+void main()
 {
   Setup_Leds();
   /* Executar o ThreadX kernel.  */
@@ -87,30 +89,30 @@ void tx_application_define(void *first_unused_memory)
   #endif
     
   //Variáveis
-  UINT Time_Slice[3];
-  UINT Prioridade_Thread[3];
+  UINT Prioridade_Thread[3];  
   UINT Preempcao_Thread[3];
-  int i;
+  UINT Time_Slice[3];  
+  UINT i;
     
     for(i=0;i<3;i++) //preenche os vetores com as configs das threads
     { 
       if(N_Programa==0)//letra a
-      {
-        Time_Slice[i]=50;
+      {        
         Prioridade_Thread[i]=0;
         Preempcao_Thread[i]=0;
+        Time_Slice[i]=50;
       }
       else if (N_Programa==1)//letra b
       {
-        Time_Slice[i]= TX_NO_TIME_SLICE; 
         Prioridade_Thread[i]=i;
         Preempcao_Thread[i]=0;
+        Time_Slice[i]= TX_NO_TIME_SLICE; 
       }  
       else //letra c,d,e
-      {
-        Time_Slice[i]= TX_NO_TIME_SLICE; 
+      {         
         Prioridade_Thread[i]=i;
         Preempcao_Thread[i]=i;
+        Time_Slice[i]= TX_NO_TIME_SLICE;
       }
     }   
     
@@ -167,46 +169,70 @@ UINT tx_thread_create(
 void thread_1_entry(ULONG thread_input)
 {
   UINT Led1=0;
+  UINT t1,t1_antes,t1_depois,t1_total;
+  
+  t1_antes = tx_time_get();
+  
   /* Esta tarefa controla o Blink do Led1 do kit. */
-  while (1)
-        {
-          //Colocar a tarefa para dormir por 25 ticks do S.O.
-          tx_thread_sleep(25);
-          //altera o estado do led ligado / desligado
-          Led1=!Led1;
-          //escreve o estado do led no pino
-          GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, Led1<<1);
-        }
+  for(t1=0; t1 <= Thread_Loop ; t1++)
+  {
+      //Colocar a tarefa para dormir por 25 ticks do S.O.
+      tx_thread_sleep(Thread_Sleep);
+      //altera o estado do led ligado / desligado
+      Led1=!Led1;
+      //escreve o estado do led no pino
+      GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, Led1<<1);
+  }
+  
+  t1_depois = tx_time_get();
+  t1_total = t1_depois - t1_antes;
+  printf("Thread 1 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t1_total,t1_antes,t1_depois);
 }
 
 /* função de execução da Thread2. */
 void thread_2_entry(ULONG thread_input)
 {
   UINT Led2=0;
+  UINT t2,t2_antes,t2_depois,t2_total;
+  
+  t2_antes = tx_time_get();
+  
   /* Esta tarefa controla o Blink do Led2 do kit. */
-  while (1)
-        {
-          //Colocar a tarefa para dormir por 50 ticks do S.O.
-          tx_thread_sleep(50);
-          //altera o estado do led ligado / desligado
-          Led2=!Led2;
-          //escreve o estado do led no pino
-          GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, Led2);
-      }
+  for(t2=0; t2 <= Thread_Loop ; t2++)
+  {
+      //Colocar a tarefa para dormir por 25 ticks do S.O.
+      tx_thread_sleep(Thread_Sleep);
+      //altera o estado do led ligado / desligado
+      Led2=!Led2;
+      //escreve o estado do led no pino
+      GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, Led2);
+  }
+  
+  t2_depois = tx_time_get();
+  t2_total = t2_depois - t2_antes;
+  printf("Thread 2 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t2_total,t2_antes,t2_depois);
 }
 
 /* função de execução da Thread2. */
 void thread_3_entry(ULONG thread_input)
 {
   UINT Led3=0;
-  /* Esta tarefa controla o Blink do Led2 do kit. */
-  while (1)
-        {
-          //Colocar a tarefa para dormir por 50 ticks do S.O.
-          tx_thread_sleep(75);
-          //altera o estado do led ligado / desligado
-          Led3=!Led3;
-          //escreve o estado do led no pino
-          GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, Led3<<4);
-        }
+  UINT t3,t3_antes,t3_depois,t3_total;
+  
+  t3_antes = tx_time_get();
+  
+  /* Esta tarefa controla o Blink do Led3 do kit. */
+  for(t3=0; t3 <= Thread_Loop ; t3++)
+  {
+      //Colocar a tarefa para dormir por 25 ticks do S.O.
+      tx_thread_sleep(Thread_Sleep);
+      //altera o estado do led ligado / desligado
+      Led3=!Led3;
+      //escreve o estado do led no pino
+      GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, Led3<<4);
+  }
+  
+  t3_depois = tx_time_get();
+  t3_total = t3_depois - t3_antes;
+  printf("Thread 3 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t3_total,t3_antes,t3_depois);
 }
