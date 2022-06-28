@@ -28,9 +28,9 @@ Programas
   final. Use mutex sem herança de prioridade. Observe o efeito na temporização das tarefas.
   N=4 -> e) Idem acima, mas com herança de prioridade.
 */
-#define N_Programa 4 //selecionar o número do programa para as questões "a)" até "e)"
-#define Thread_Loop 10
-#define Thread_Sleep 100 //1 tick SO = 10ms
+#define N_Programa 2 //selecionar o número do programa para as questões "a)" até "e)"
+#define Thread_Loop 100
+#define Thread_Sleep 10 //1 tick SO = 10ms
 
 /* Define as Threads utilizadas e as estruturas de dados do S.O. ... */
 TX_THREAD thread_1;
@@ -52,6 +52,7 @@ UINT tempo_antes_global=0;
 UINT tempo_depois_global=0;
 UINT tempo_total_global=0;
 
+/*-----GPIO CONFIG-----*/
 void Setup_Leds()
 {
   /*
@@ -77,10 +78,56 @@ void Setup_Leds()
   
 }
 
+void Loop_Led(UINT N_Led, UINT N_Loop)
+{
+  UINT i;
+  UINT Led1=0,Led2=0,Led3=0;
+  
+  if(N_Led==1)
+  {
+    for(i=0; i <= N_Loop ; i++)
+    {
+        //Colocar a tarefa para dormir por X ticks do S.O.
+        tx_thread_sleep(Thread_Sleep);
+        //altera o estado do led ligado / desligado
+        Led1=!Led1;
+        //escreve o estado do led no pino
+        GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, Led1<<1);
+    }
+  }
+  
+  if(N_Led==2)
+  {
+    for(i=0; i <= N_Loop ; i++)
+    {
+        //Colocar a tarefa para dormir por X ticks do S.O.
+        tx_thread_sleep(Thread_Sleep);
+        //altera o estado do led ligado / desligado
+        Led2=!Led2;
+        //escreve o estado do led no pino
+        GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, Led2);
+    }
+  
+  }
+  if(N_Led==3)
+  {
+    for(i=0; i <= N_Loop ; i++)
+    {
+        //Colocar a tarefa para dormir por X ticks do S.O.
+        tx_thread_sleep(Thread_Sleep);
+        //altera o estado do led ligado / desligado
+        Led3=!Led3;
+        //escreve o estado do led no pino
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, Led3<<4);
+    }
+  }
+}
+
 /* função main. */
 void main()
 {
-  Setup_Leds();
+  //SETUP
+  Setup_Leds();  
   /* Executar o ThreadX kernel.  */
   tx_kernel_enter();
 }
@@ -173,8 +220,8 @@ UINT tx_thread_create(
 /*----------THREAD 1----------*/
 void thread_1_entry(ULONG thread_input)
 {
-  UINT Led1=0;
-  UINT t1,t1_antes,t1_depois,t1_total;
+  //UINT Led1=0,t1;
+  UINT t1_antes,t1_depois,t1_total;
   
   t1_antes = tx_time_get();  
   
@@ -182,17 +229,9 @@ void thread_1_entry(ULONG thread_input)
   {
     tx_mutex_get(&mutex_0, TX_WAIT_FOREVER); //fica no controle do Mutex
   }
-  
-  /* Esta tarefa controla o Blink do Led1 do kit. */
-  for(t1=0; t1 <= Thread_Loop ; t1++)
-  {
-      //Colocar a tarefa para dormir por 25 ticks do S.O.
-      tx_thread_sleep(Thread_Sleep);
-      //altera o estado do led ligado / desligado
-      Led1=!Led1;
-      //escreve o estado do led no pino
-      GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, Led1<<1);
-  }
+   
+  /*----------LOOP----------*/
+  Loop_Led(1,Thread_Loop);
   
   if(N_Programa==3 || N_Programa==4) //Mutex - questão d,e - Release
   {
@@ -206,31 +245,21 @@ void thread_1_entry(ULONG thread_input)
   tempo_antes_global = t1_antes;
   tempo_total_global += t1_total;
   tempo_depois_global = tempo_total_global;  
-  
-  printf("Thread 1 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t1_total,t1_antes,t1_depois);
-  
-  /*---tempo global---*/
-  printf("TAG = %u ms \nTDG = %u ms \nTempo Total = %u ms \n\n", tempo_antes_global,tempo_depois_global,tempo_total_global);
+
+  if(N_Programa==1 || N_Programa==2)
+    printf("Thread 1 \nAntes = %u \nDepois = %u \nTempo Total = %u \n\n", tempo_antes_global,tempo_depois_global,t1_total);
 }
 
 /*----------THREAD 2----------*/
 void thread_2_entry(ULONG thread_input)
 {
-  UINT Led2=0;
-  UINT t2,t2_antes,t2_depois,t2_total;
+  //UINT Led2=0,t2;
+  UINT t2_antes,t2_depois,t2_total;
   
   t2_antes = tx_time_get();
   
-  /* Esta tarefa controla o Blink do Led2 do kit. */
-  for(t2=0; t2 <= Thread_Loop ; t2++)
-  {
-      //Colocar a tarefa para dormir por 25 ticks do S.O.
-      tx_thread_sleep(Thread_Sleep);
-      //altera o estado do led ligado / desligado
-      Led2=!Led2;
-      //escreve o estado do led no pino
-      GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, Led2);
-  }
+  /*----------LOOP----------*/
+  Loop_Led(2,Thread_Loop);
   
   t2_depois = tx_time_get();
   t2_total = t2_depois - t2_antes;
@@ -239,18 +268,16 @@ void thread_2_entry(ULONG thread_input)
   tempo_antes_global = tempo_depois_global;
   tempo_total_global += t2_total; 
   tempo_depois_global = tempo_total_global;
-  
-  printf("Thread 2 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t2_total,t2_antes,t2_depois);
-  
-  /*---tempo global---*/
-  printf("TAG = %u ms \nTDG = %u ms \nTempo Total = %u ms \n\n", tempo_antes_global,tempo_depois_global,tempo_total_global);
+
+  if(N_Programa==1 || N_Programa==2)
+    printf("Thread 2 \nAntes = %u \nDepois = %u \nTempo Total = %u \n\n", tempo_antes_global,tempo_depois_global,t2_total);
 }
 
 /*----------THREAD 3----------*/
 void thread_3_entry(ULONG thread_input)
 {
-  UINT Led3=0;
-  UINT t3,t3_antes,t3_depois,t3_total;
+  //UINT Led3=0,t3;
+  UINT t3_antes,t3_depois,t3_total;
   
   t3_antes = tx_time_get();
   
@@ -259,16 +286,8 @@ void thread_3_entry(ULONG thread_input)
     tx_mutex_get(&mutex_0, TX_WAIT_FOREVER); //fica no controle do Mutex
   }
   
-  /* Esta tarefa controla o Blink do Led3 do kit. */
-  for(t3=0; t3 <= Thread_Loop ; t3++)
-  {
-      //Colocar a tarefa para dormir por 25 ticks do S.O.
-      tx_thread_sleep(Thread_Sleep);
-      //altera o estado do led ligado / desligado
-      Led3=!Led3;
-      //escreve o estado do led no pino
-      GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, Led3<<4);
-  }
+  /*----------LOOP----------*/
+  Loop_Led(3,Thread_Loop);
   
   if(N_Programa==3 || N_Programa==4) //Mutex - questão d,e - Release
   {
@@ -282,9 +301,7 @@ void thread_3_entry(ULONG thread_input)
   tempo_antes_global = tempo_depois_global;
   tempo_total_global += t3_total; 
   tempo_depois_global = tempo_total_global;
-  
-  printf("Thread 3 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t3_total,t3_antes,t3_depois);
-  
-  /*---tempo global---*/
-  printf("TAG = %u ms \nTDG = %u ms \nTempo Total = %u ms \n\n", tempo_antes_global,tempo_depois_global,tempo_total_global);
+
+  if(N_Programa==1 || N_Programa==2)
+    printf("Thread 3 \nAntes = %u \nDepois = %u \nTempo Total = %u \n\n", tempo_antes_global,tempo_depois_global,t3_total);
 }
