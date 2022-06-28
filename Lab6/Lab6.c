@@ -28,7 +28,7 @@ Programas
   final. Use mutex sem herança de prioridade. Observe o efeito na temporização das tarefas.
   N=4 -> e) Idem acima, mas com herança de prioridade.
 */
-#define N_Programa 0 //selecionar o número do programa para as letras "a)" até "e)"
+#define N_Programa 4 //selecionar o número do programa para as questões "a)" até "e)"
 #define Thread_Loop 10
 #define Thread_Sleep 100 //1 tick SO = 10ms
 
@@ -46,6 +46,11 @@ UCHAR byte_pool_memory[DEMO_BYTE_POOL_SIZE];
 void thread_1_entry(ULONG thread_input);
 void thread_2_entry(ULONG thread_input);
 void thread_3_entry(ULONG thread_input);
+
+//variáveis globais para monitorar o tempo
+UINT tempo_antes_global=0;
+UINT tempo_depois_global=0;
+UINT tempo_total_global=0;
 
 void Setup_Leds()
 {
@@ -96,19 +101,19 @@ void tx_application_define(void *first_unused_memory)
     
     for(i=0;i<3;i++) //preenche os vetores com as configs das threads
     { 
-      if(N_Programa==0)//letra a
+      if(N_Programa==0)//questão a
       {        
         Prioridade_Thread[i]=0;
         Preempcao_Thread[i]=0;
         Time_Slice[i]=50;
       }
-      else if (N_Programa==1)//letra b
+      else if (N_Programa==1)//questão b
       {
         Prioridade_Thread[i]=i;
         Preempcao_Thread[i]=0;
         Time_Slice[i]= TX_NO_TIME_SLICE; 
       }  
-      else //letra c,d,e
+      else //questões c,d,e
       {         
         Prioridade_Thread[i]=i;
         Preempcao_Thread[i]=i;
@@ -151,12 +156,12 @@ UINT tx_thread_create(
   /* Cria a tarefa3 com time slice. */
   tx_thread_create(&thread_3, "thread 3", thread_3_entry, 2, pointer, DEMO_STACK_SIZE, Prioridade_Thread[2], Preempcao_Thread[2], Time_Slice[2], TX_AUTO_START);
   
-  //****MUTEX****
-  if(N_Programa==3)//letra d
+  /*----------MUTEX----------*/
+  if(N_Programa==3)//questão d
   {
     tx_mutex_create(&mutex_0, "mutex 0", TX_NO_INHERIT); //sem herança
   }
-  if(N_Programa==4)//letra e
+  if(N_Programa==4)//questão e
   { 
     tx_mutex_create(&mutex_0, "mutex 0", TX_INHERIT); //herança
   }  
@@ -165,13 +170,18 @@ UINT tx_thread_create(
   tx_block_release(pointer);
 }
 
-/* função de execução da Thread1. */
+/*----------THREAD 1----------*/
 void thread_1_entry(ULONG thread_input)
 {
   UINT Led1=0;
   UINT t1,t1_antes,t1_depois,t1_total;
   
-  t1_antes = tx_time_get();
+  t1_antes = tx_time_get();  
+  
+  if(N_Programa==3 || N_Programa==4) //Mutex - questão d,e - Control
+  {
+    tx_mutex_get(&mutex_0, TX_WAIT_FOREVER); //fica no controle do Mutex
+  }
   
   /* Esta tarefa controla o Blink do Led1 do kit. */
   for(t1=0; t1 <= Thread_Loop ; t1++)
@@ -184,12 +194,26 @@ void thread_1_entry(ULONG thread_input)
       GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, Led1<<1);
   }
   
+  if(N_Programa==3 || N_Programa==4) //Mutex - questão d,e - Release
+  {
+     tx_mutex_put(&mutex_0); //libera o Mutex
+  }
+  
   t1_depois = tx_time_get();
   t1_total = t1_depois - t1_antes;
+  
+  /*---tempo global---*/
+  tempo_antes_global = t1_antes;
+  tempo_total_global += t1_total;
+  tempo_depois_global = tempo_total_global;  
+  
   printf("Thread 1 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t1_total,t1_antes,t1_depois);
+  
+  /*---tempo global---*/
+  printf("TAG = %u ms \nTDG = %u ms \nTempo Total = %u ms \n\n", tempo_antes_global,tempo_depois_global,tempo_total_global);
 }
 
-/* função de execução da Thread2. */
+/*----------THREAD 2----------*/
 void thread_2_entry(ULONG thread_input)
 {
   UINT Led2=0;
@@ -210,16 +234,30 @@ void thread_2_entry(ULONG thread_input)
   
   t2_depois = tx_time_get();
   t2_total = t2_depois - t2_antes;
+  
+  /*---tempo global---*/
+  tempo_antes_global = tempo_depois_global;
+  tempo_total_global += t2_total; 
+  tempo_depois_global = tempo_total_global;
+  
   printf("Thread 2 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t2_total,t2_antes,t2_depois);
+  
+  /*---tempo global---*/
+  printf("TAG = %u ms \nTDG = %u ms \nTempo Total = %u ms \n\n", tempo_antes_global,tempo_depois_global,tempo_total_global);
 }
 
-/* função de execução da Thread2. */
+/*----------THREAD 3----------*/
 void thread_3_entry(ULONG thread_input)
 {
   UINT Led3=0;
   UINT t3,t3_antes,t3_depois,t3_total;
   
   t3_antes = tx_time_get();
+  
+  if(N_Programa==3 || N_Programa==4) //Mutex - questão d,e - Control
+  {
+    tx_mutex_get(&mutex_0, TX_WAIT_FOREVER); //fica no controle do Mutex
+  }
   
   /* Esta tarefa controla o Blink do Led3 do kit. */
   for(t3=0; t3 <= Thread_Loop ; t3++)
@@ -232,7 +270,21 @@ void thread_3_entry(ULONG thread_input)
       GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, Led3<<4);
   }
   
+  if(N_Programa==3 || N_Programa==4) //Mutex - questão d,e - Release
+  {
+    tx_mutex_put(&mutex_0); //libera o Mutex    
+  }
+  
   t3_depois = tx_time_get();
   t3_total = t3_depois - t3_antes;
+  
+  /*---tempo global---*/
+  tempo_antes_global = tempo_depois_global;
+  tempo_total_global += t3_total; 
+  tempo_depois_global = tempo_total_global;
+  
   printf("Thread 3 = %u ms \nTempo Antes = %u ms \nTempo Depois = %u ms \n\n", t3_total,t3_antes,t3_depois);
+  
+  /*---tempo global---*/
+  printf("TAG = %u ms \nTDG = %u ms \nTempo Total = %u ms \n\n", tempo_antes_global,tempo_depois_global,tempo_total_global);
 }
