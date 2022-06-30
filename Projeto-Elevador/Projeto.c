@@ -561,7 +561,11 @@ void UARTInit(void){
   //Clock do sistema 25MHz
   g_ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_240), 25000000);
   
-    /*-----UART----*/
+  //GPIO port A
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+  while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA)) {/*Espera habilitar o port*/}
+  
+   /*-----UART----*/
   // Habilitando a UART0
   SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
   while(!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))  {/*Espera habilitar a uart0*/}
@@ -596,7 +600,7 @@ void UART_READ(ULONG thread_input){
     else if(msg[0]=='d'){
       tx_queue_send(&fila_d_id, msg, 0);
     }  
-    //osThreadYield();
+    tx_thread_relinquish();//osThreadYield();
   } 
 }
 void UART_WRITE(ULONG thread_input){
