@@ -21,3 +21,5 @@
 - ThreadX 
   - [Github Repo](https://github.com/azure-rtos/threadx)
   - [Documentation](https://docs.microsoft.com/en-us/azure/rtos/threadx/)
+- Elevador
+  - [Projeto SimSE32](https://pessoal.dainf.ct.utfpr.edu.br/douglasrenaux/index_files/Page392.htm)
