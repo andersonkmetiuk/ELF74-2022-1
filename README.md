@@ -58,11 +58,13 @@
   - histogram - endereço inicial de um vetor de tamanho 256. Cada posição do vetor armazena um inteiro
 sem sinal de 16-bits. Este vetor não possui dados válidos quando a função é chamada. Ele é usado
 apenas para o retorno da função.
-- Retorno:
-  - inteiro sem sinal de 16 bits indicando o número de pixels processados.
 - Restrições:
   - O tamanho máximo da imagem é de 64K (65.536) pixels.
   - A função retorna o valor 0 se o tamanho da imagem for superior a 64K.
+- Retorno:
+  - Inteiro sem sinal de 16 bits indicando o número de pixels processados.
+  - Saída em CSV (comma-separated values)
+    - Como a tiva não tem suporte para arquivos os valores são gerados no console e são copiados manualmente para um arquivo .csv
 
 ## Prototipo da função
 ```
@@ -102,3 +104,8 @@ const uint8_t image0[HEIGTH0][WIDTH0] = {
   MOV R4, R3  
   BX LR
 ```
+## Histograma de image0:
+![img0-histogram](Lab3/images/img0.png)
+
+## Histograma de image1:
+![img0-histogram](Lab3/images/img1.png)
