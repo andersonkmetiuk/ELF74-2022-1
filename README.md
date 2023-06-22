@@ -23,3 +23,26 @@
   - [Documentation](https://docs.microsoft.com/en-us/azure/rtos/threadx/)
 - Elevador
   - [Projeto SimSE32](https://pessoal.dainf.ct.utfpr.edu.br/douglasrenaux/index_files/Page392.htm)
+
+## DevKit
+- LEDs
+  - PN1 &rarr; LED 1
+  - PN0 &rarr; LED 2
+  - PF0 &rarr; LED 3
+  - PF4 &rarr; LED 4
+- Switchs
+  - PJ0 &rarr; SW1
+  - PJ1 &rarr; SW2
+ 
+## Lab 1
+- Configuração inicial da placa
+
+## Lab 2
+- Deve-se ler uma tecla: Tecla_1 (PJ0/USR_SW1) para iniciar a contagem do tempo e enquanto a Tecla_1 não for pressionada nada acontece.
+- O disparo do “tempo de jogo” deve ser feito pela Tecla_2 (PJ1/USR_SW2) somente após ter sido dado início do jogo na Tecla_1.
+- Caso o tempo exceda de 3s, travar o uso da segunda tecla: Tecla_2 e indicar que o jogo acabou acendendo o LED:D4 (PF0).
+- O programa pode deve reiniciar todo o processo caso a Tecla_1 (PJ0/USR_SW1) seja pressionada novamente, mesmo estando no estado do “tempo de jogo”.
+- A reposta do “tempo de jogo” deve ser fornecida em "ms".
+
+### Fluxograma
+<p align="center"><img alt="Lab2-Fluxogram" src= "Lab2/Fluxograma/Lab2%20.jpg" /> </p>
