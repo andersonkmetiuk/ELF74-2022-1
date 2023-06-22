@@ -120,16 +120,20 @@ A Comunicação Serial é muito utilizada para permitir aos microcontroladores u
 Programar um protocolo serial simples, sem paridade, checksum, C.R.C. e criptografia. Este protocolo foi desenvolvido para comandar 04 x Relés na placa do Kit TIVA EK-TM4C1294XL. Simular os Relés nos 4 leds da placa: LED1 (PN1), LED2 (PN0), LED3 (PF4) e LED4 (PF0). O LED ligado significa Relé ligado e LED desligado significa Relé desligado. O programa deve ser no estilo “Super Loop”. Deve ficar em loop infinito sempre que receber um pacote válido na serial, deve atuar no hardware.
 
 ### Protocolo utilizado
-|    Comando    |   Resposta    |
-|:-------------:|:-------------:| 
-|#R10|@R10|
-|#R11|@R11| 
-|#R20|@R20| 
-|#R21|@R21| 
-|#R30|@R30| 
-|#R31|@R31| 
-|#R40|@R40| 
-|#R41|@R41| 
-|#RTX1|@TX1| 
-|#RTX0|@TX0| 
+|    #    |   Tipo    |   Número do LED   |   Estado (0: apagado / 1: ligado)    |
+|:-------------:|:-------------:| :-------------:| :-------------:| 
+
+|    Comando    |   Resposta    | Resultado |
+|:-------------:|:-------------:| :-------------:|
+|#R10|@R10| Desliga LED 1 |
+|#R11|@R11| Liga LED 1 |
+|#R20|@R20| Desliga LED 2 |
+|#R21|@R21| Liga LED 2 |
+|#R30|@R30| Desliga LED 3 |
+|#R31|@R31| Liga LED 3 |
+|#R40|@R40| Desliga LED 4 |
+|#R41|@R41| Liga LED 4 |
+|#RTX0|@TX0| Desliga tudo |
+|#RTX1|@TX1| Liga tudo |
+ 
 
