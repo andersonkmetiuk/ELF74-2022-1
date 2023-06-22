@@ -30,12 +30,13 @@
   - PN0 &rarr; LED 2
   - PF0 &rarr; LED 3
   - PF4 &rarr; LED 4
+
 - Switchs
   - PJ0 &rarr; SW1
   - PJ1 &rarr; SW2
  
 ## Lab 1
-- Configuração inicial da placa
+Configuração inicial da placa
 
 ## Lab 2
 - Deve-se ler uma tecla: Tecla_1 (PJ0/USR_SW1) para iniciar a contagem do tempo e enquanto a Tecla_1 não for pressionada nada acontece.
@@ -48,42 +49,43 @@
 <p align="center"><img alt="Lab2-Fluxogram" src= "Lab2/Fluxograma/Lab2%20.jpg" /> </p>
 
 ## Lab 3 - Histograma
-- Integração de Assembly com C.
-### Definição do problema:
-- Desenvolva uma função em assembly que constrói o histograma de uma imagem em tons de cinza com 8-bits por pixel.
-- Parâmetros de entrada:
-  - image width - número de pixels em uma linha da imagem.
-  - image height - altura da imagem em pixels.
-  - starting address - endereço do primeiro pixel da imagem.
-  - histogram - endereço inicial de um vetor de tamanho 256. Cada posição do vetor armazena um inteiro
-sem sinal de 16-bits. Este vetor não possui dados válidos quando a função é chamada. Ele é usado
-apenas para o retorno da função.
-- Restrições:
-  - O tamanho máximo da imagem é de 64K (65.536) pixels.
-  - A função retorna o valor 0 se o tamanho da imagem for superior a 64K.
-- Retorno:
-  - Inteiro sem sinal de 16 bits indicando o número de pixels processados.
-  - Saída em CSV (comma-separated values)
-    - Como a tiva não tem suporte para arquivos os valores são gerados no console e são copiados manualmente para um arquivo .csv
+Integração de Assembly com C.
 
-## Prototipo da função
+## Domínio do problema
+Um bitmap é composto por pixels dispostos na forma de uma matriz. Numa imagem em tons de cinza, cada pixel é representado por um valor numérico indicando o nível de luminosidade daquele pixel. Numa imagem em tons de cinza de 8-bits, cada pixel é representado por um valor de 8-bits, portanto de 0 (preto) até 255 (branco).
+
+Um histograma é uma representação gráfica da distribuição de tons de uma imagem. O eixo horizontal apresenta os possíveis valores dos pixels (neste caso de 0 a 255) e o eixo vertical indica quantos pixels da imagem tem aquele valor.
+
+## Definição do problema
+Desenvolva uma função em assembly que constrói o histograma de uma imagem em tons de cinza com 8-bits por pixel.
+
+### Parâmetros de entrada
+- image width - número de pixels em uma linha da imagem.
+- image height - altura da imagem em pixels.
+- starting address - endereço do primeiro pixel da imagem.
+- histogram - endereço inicial de um vetor de tamanho 256. Cada posição do vetor armazena um inteiro sem sinal de 16-bits. Este vetor não possui dados válidos quando a função é chamada. Ele é usado apenas para o retorno da função.
+
+### Restrições
+- O tamanho máximo da imagem é de 64K (65.536) pixels.
+- A função retorna o valor 0 se o tamanho da imagem for superior a 64K.
+ 
+### Retorno
+- Inteiro sem sinal de 16 bits indicando o número de pixels processados.
+- Saída em CSV (comma-separated values)
+  - Como a tiva não tem suporte para arquivos os valores são gerados no console e são copiados manualmente para um arquivo .csv
+
+### Prototipo da função
 ```
 uint16_t EightBitHistogram(uint16_t width, uint16_t height, uint8_t * p_image, uint16_t * p_histogram);
 ```
 
-## Exemplo de imagem (arquivo images.c)
+### Exemplo de imagem (arquivo images.c)
 ```
 const uint8_t image0[HEIGTH0][WIDTH0] = {
     { 20, 16, 16, 18}, {255, 255, 0, 0}, {32,32,32,32}
 };
 ```
-
-### Domínio do problema:
-- Um bitmap é composto por pixels dispostos na forma de uma matriz. Numa imagem em tons de cinza, cada pixel é representado por um valor numérico indicando o nível de luminosidade daquele pixel.
-- Numa imagem em tons de cinza de 8-bits, cada pixel é representado por um valor de 8-bits, portanto de 0 (preto) até 255 (branco).
-- Um histograma é uma representação gráfica da distribuição de tons de uma imagem. O eixo horizontal apresenta os possíveis valores dos pixels (neste caso de 0 a 255) e o eixo vertical indica quantos pixels da imagem tem aquele valor.
-
-### Para realizar a integração do C com o Assembly utilizamos o seguinte trecho de código:
+### Para realizar a integração do C com o Assembly utilizamos o seguinte trecho de código
 ```
 ; -------------------------------------------------------------------------------
         PUBLIC EightBitHistogram
@@ -93,19 +95,23 @@ const uint8_t image0[HEIGTH0][WIDTH0] = {
         EXPORT EightBitHistogram ;exportar a função pro c
 ; -------------------------------------------------------------------------------
 ```
-### Os parâmetros são armazenados nos seguintes registradores:
+### Os parâmetros são armazenados nos seguintes registradores
 - R0 &rarr; width
 - R1 &rarr; height
 - R2 &rarr; endereço/ponteiro da imagem
 - R3 &rarr; endereço/ponteiro do histograma
     
-### A Tiva C armazena o endereço de retorno em R4, por isso temos:
+### A Tiva C armazena o endereço de retorno em R4, por isso temos
 ```
   MOV R4, R3  
   BX LR
 ```
-## Histograma de image0:
+### Histograma de image0
 ![img0-histogram](Lab3/images/img0.png)
 
-## Histograma de image1:
+### Histograma de image1
 ![img0-histogram](Lab3/images/img1.png)
+
+## Lab 4 - Comunicação Serial
+### Contexto
+A Comunicação Serial é muito utilizada para permitir aos microcontroladores um canal de envio e recepção de dados com outros dispositivos. Não é uma comunicação considerada de alta velocidade, quando se compara aos padrões SPI e Ethernet. Porém, é de fácil utilização e configuração de hardware.
