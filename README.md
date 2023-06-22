@@ -28,8 +28,8 @@
 - LEDs
   - PN1 &rarr; LED 1
   - PN0 &rarr; LED 2
-  - PF0 &rarr; LED 3
-  - PF4 &rarr; LED 4
+  - PF4 &rarr; LED 3
+  - PF0 &rarr; LED 4
 
 - Switchs
   - PJ0 &rarr; SW1
@@ -113,5 +113,23 @@ const uint8_t image0[HEIGTH0][WIDTH0] = {
 ![img0-histogram](Lab3/images/img1.png)
 
 ## Lab 4 - Comunicação Serial
-### Contexto
+## Contexto
 A Comunicação Serial é muito utilizada para permitir aos microcontroladores um canal de envio e recepção de dados com outros dispositivos. Não é uma comunicação considerada de alta velocidade, quando se compara aos padrões SPI e Ethernet. Porém, é de fácil utilização e configuração de hardware.
+
+## Definição do problema
+Programar um protocolo serial simples, sem paridade, checksum, C.R.C. e criptografia. Este protocolo foi desenvolvido para comandar 04 x Relés na placa do Kit TIVA EK-TM4C1294XL. Simular os Relés nos 4 leds da placa: LED1 (PN1), LED2 (PN0), LED3 (PF4) e LED4 (PF0). O LED ligado significa Relé ligado e LED desligado significa Relé desligado. O programa deve ser no estilo “Super Loop”. Deve ficar em loop infinito sempre que receber um pacote válido na serial, deve atuar no hardware.
+
+### Protocolo utilizado
+|    Comando    |   Resposta    |
+|:-------------:|:-------------:| 
+|#R10|@R10|
+|#R11|@R11| 
+|#R20|@R20| 
+|#R21|@R21| 
+|#R30|@R30| 
+|#R31|@R31| 
+|#R40|@R40| 
+|#R41|@R41| 
+|#RTX1|@TX1| 
+|#RTX0|@TX0| 
+
