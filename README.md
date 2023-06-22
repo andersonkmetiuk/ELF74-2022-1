@@ -80,3 +80,25 @@ const uint8_t image0[HEIGTH0][WIDTH0] = {
 - Um bitmap é composto por pixels dispostos na forma de uma matriz. Numa imagem em tons de cinza, cada pixel é representado por um valor numérico indicando o nível de luminosidade daquele pixel.
 - Numa imagem em tons de cinza de 8-bits, cada pixel é representado por um valor de 8-bits, portanto de 0 (preto) até 255 (branco).
 - Um histograma é uma representação gráfica da distribuição de tons de uma imagem. O eixo horizontal apresenta os possíveis valores dos pixels (neste caso de 0 a 255) e o eixo vertical indica quantos pixels da imagem tem aquele valor.
+
+### Para realizar a integração do C com o Assembly utilizamos o seguinte trecho de código:
+```
+; -------------------------------------------------------------------------------
+        PUBLIC EightBitHistogram
+        SECTION .text : CODE (2) 
+        THUMB                        ; Instruções do tipo Thumb-2
+; -------------------------------------------------------------------------------
+        EXPORT EightBitHistogram ;exportar a função pro c
+; -------------------------------------------------------------------------------
+```
+### Os parâmetros são armazenados nos seguintes registradores:
+- R0 &rarr; width
+- R1 &rarr; height
+- R2 &rarr; endereço/ponteiro da imagem
+- R3 &rarr; endereço/ponteiro do histograma
+    
+### A Tiva C armazena o endereço de retorno em R4, por isso temos:
+```
+  MOV R4, R3  
+  BX LR
+```
