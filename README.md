@@ -46,3 +46,37 @@
 
 ### Fluxograma
 <p align="center"><img alt="Lab2-Fluxogram" src= "Lab2/Fluxograma/Lab2%20.jpg" /> </p>
+
+## Lab 3 - Histograma
+- Integração de Assembly com C.
+### Definição do problema:
+- Desenvolva uma função em assembly que constrói o histograma de uma imagem em tons de cinza com 8-bits por pixel.
+- Parâmetros de entrada:
+  - image width - número de pixels em uma linha da imagem.
+  - image height - altura da imagem em pixels.
+  - starting address - endereço do primeiro pixel da imagem.
+  - histogram - endereço inicial de um vetor de tamanho 256. Cada posição do vetor armazena um inteiro
+sem sinal de 16-bits. Este vetor não possui dados válidos quando a função é chamada. Ele é usado
+apenas para o retorno da função.
+- Retorno:
+  - inteiro sem sinal de 16 bits indicando o número de pixels processados.
+- Restrições:
+  - O tamanho máximo da imagem é de 64K (65.536) pixels.
+  - A função retorna o valor 0 se o tamanho da imagem for superior a 64K.
+
+## Prototipo da função
+```
+uint16_t EightBitHistogram(uint16_t width, uint16_t height, uint8_t * p_image, uint16_t * p_histogram);
+```
+
+## Exemplo de imagem (arquivo images.c)
+```
+const uint8_t image0[HEIGTH0][WIDTH0] = {
+    { 20, 16, 16, 18}, {255, 255, 0, 0}, {32,32,32,32}
+};
+```
+
+### Domínio do problema:
+- Um bitmap é composto por pixels dispostos na forma de uma matriz. Numa imagem em tons de cinza, cada pixel é representado por um valor numérico indicando o nível de luminosidade daquele pixel.
+- Numa imagem em tons de cinza de 8-bits, cada pixel é representado por um valor de 8-bits, portanto de 0 (preto) até 255 (branco).
+- Um histograma é uma representação gráfica da distribuição de tons de uma imagem. O eixo horizontal apresenta os possíveis valores dos pixels (neste caso de 0 a 255) e o eixo vertical indica quantos pixels da imagem tem aquele valor.
