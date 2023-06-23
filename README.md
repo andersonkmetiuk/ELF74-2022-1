@@ -39,13 +39,14 @@
 Configuração inicial da placa
 
 ## Lab 2
+## Definição do problema
 - Deve-se ler uma tecla: Tecla_1 (PJ0/USR_SW1) para iniciar a contagem do tempo e enquanto a Tecla_1 não for pressionada nada acontece.
 - O disparo do “tempo de jogo” deve ser feito pela Tecla_2 (PJ1/USR_SW2) somente após ter sido dado início do jogo na Tecla_1.
 - Caso o tempo exceda de 3s, travar o uso da segunda tecla: Tecla_2 e indicar que o jogo acabou acendendo o LED:D4 (PF0).
 - O programa pode deve reiniciar todo o processo caso a Tecla_1 (PJ0/USR_SW1) seja pressionada novamente, mesmo estando no estado do “tempo de jogo”.
 - A reposta do “tempo de jogo” deve ser fornecida em "ms".
 
-### Fluxograma
+## Fluxograma
 <p align="center"><img alt="Lab2-Fluxogram" src= "Lab2/Fluxograma/Lab2%20.jpg" /> </p>
 
 ## Lab 3 - Histograma
@@ -136,4 +137,8 @@ Programar um protocolo serial simples, sem paridade, checksum, C.R.C. e criptogr
 |#RTX0|@TX0| Desliga tudo |
 |#RTX1|@TX1| Liga tudo |
  
-
+## Lab 5 - ThreadX
+## Definição do problema
+- Duas Threads: “TLed1” e “TLed2”;
+- Na TLed1 construir um código simples para que o Led1 da placa pisque a 1s.
+- Na TLed2 construir um código simples para que o Led2 da placa pisque a 2s.
