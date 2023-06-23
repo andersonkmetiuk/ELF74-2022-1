@@ -176,3 +176,10 @@ c) Escalonamento preemptivo por prioridade.
 d) Implemente um Mutex compartilhado entre T1 e T3. No início de cada job estas tarefas devem solicitar este mutex e liberá-lo no final. Use mutex sem herança de prioridade. Observe o efeito na temporização das tarefas.
 
 e) Idem acima, mas com herança de prioridade.
+
+## Projeto Final - Elevador
+## Definição do problema
+Elaborar uma solução de controle em malha fechada para um sistema de 3 elevadores utilizando o simulador presente em: 
+- [Projeto SimSE32](https://pessoal.dainf.ct.utfpr.edu.br/douglasrenaux/index_files/Page392.htm)
+
+A Solução deverá utilizar o ThreadX e conter pelo menos 3 threads.
