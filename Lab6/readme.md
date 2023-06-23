@@ -1,6 +1,6 @@
-Aluno: Anderson Kmetiuk
+# Solução
 
-![img](https://github.com/andersonkmetiuk/ELF74-2022-1/blob/main/Lab6/Escalonamento.png)
+<p> <img alt="Escalonamento" src="Escalonamento.png" width="2270" height="153"/> </p>
 
 Os tempos foram calculados utilizando um loop de um tempo considerável e um cronômetro, com exceção do caso das questões "b" e "c" onde foi utilizada a função tx_time_get();
 Nessas questões foi difícil a visualização para medir com o cronômetro, por esse motivo foi utilizada essa função
