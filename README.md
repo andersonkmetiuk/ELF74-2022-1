@@ -142,3 +142,37 @@ Programar um protocolo serial simples, sem paridade, checksum, C.R.C. e criptogr
 - Duas Threads: “TLed1” e “TLed2”;
 - Na TLed1 construir um código simples para que o Led1 da placa pisque a 1s.
 - Na TLed2 construir um código simples para que o Led2 da placa pisque a 2s.
+
+## Lab 6 - Escalonamento
+## Definição do problema
+Criar um conjunto de 3 tarefas com temporizações conhecidas e experimentar variações de algoritmos de escalonamento no ThreadX.
+
+#### 1. Elabore uma rotina em C que fica num loop com número definido de execuções, acendendo e apagando um led específico. Os parâmetros de rotina são o número de loops (inteiro de 32 bits) e o identificador do led a ser acionado. Quando o led acender, apenas o led indicado deve ser aceso. Quando o led apagar, todos os leds da placa devem ser apagados.
+Obs: cuide para que esta rotina seja “thread-safe”, ou seja, seja tolerante a reentrância. Não use variáveis globais nem chame funções que não são “thread-safe”.
+
+#### 2. Obtenha o tempo de execução de cada loop desta rotina. Várias alternativas são possíveis para este passo, escolha uma destas alternativas:
+  - Examinando o código em assembly e calculando a duração do mesmo para uma frequencia de clock conhecida.
+  - Executando o loop diversas vezes e medindo o tempo com um temporizador (p.ex. Systick ou o próprio contador de ciclos disponível na IDE).
+  - Executanto o loop milhões de vezes e medindo o tempo com relógio.
+
+Obs: sua medição não precisa ser superprecisa, pode ser aproximada.
+
+#### 3. Crie 3 threads com as características a seguir. O tempo da thread executando é dado pela função elaborada no passo 1. O tempo da thread suspensa é dada pela função sleep do ThreadX.
+
+|    Tarefa    |   Prioridade    |   Tempo Exec.   |   Período    |   LED    |
+|:-------------:|:-------------:| :-------------:| :-------------:| :-------------:|
+|    T1    |   Alta    |   300 ms   |   1 s    |   Led1    |
+|    T2    |   Média    |   500 ms  |   1.5 s    |   Led2    |
+|    T3    |   Baixa    |   800 ms   |   4 s    |   Led3    |
+
+#### 4. Execute estas tarefas com as alternativas de escalonamento indicadas a seguir. Relate o efeito que você observar na execução das tarefas pela visualização dos Leds. Em particular, observe se os períodos das tarefas estão sendo obedecidos em cada caso.
+
+a) Escalonamento por time-slice de 50 ms. Todas as tarefas com mesma prioridade.
+
+b) Escalonamento sem time-slice e sem preempção. Prioridades estabelecidas no passo 3. A preempção pode ser evitada com o “preemption threshold” do ThreadX.
+
+c) Escalonamento preemptivo por prioridade.
+
+d) Implemente um Mutex compartilhado entre T1 e T3. No início de cada job estas tarefas devem solicitar este mutex e liberá-lo no final. Use mutex sem herança de prioridade. Observe o efeito na temporização das tarefas.
+
+e) Idem acima, mas com herança de prioridade.
